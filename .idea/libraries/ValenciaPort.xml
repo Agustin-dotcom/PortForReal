@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ValenciaPort">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/.idea/ValenciaPort.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
