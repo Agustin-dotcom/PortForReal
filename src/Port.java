@@ -1,146 +1,162 @@
+import PaqGroupINameAgustin.Container;
+import PaqGroupINameAgustin.ContainerHub;
+//Exceptions
+//Si pedis dos veces seguidas el number of containers no funciona
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.util.Arrays;
 import javax.swing.JFrame;
 
 public class Port extends JFrame {
 
-    private JTextField tfIdNumber;//tf stands for "text field"
-    private JComboBox comboBox1;
-    private JTextField tfWeight;
-    private JRadioButton a1RadioButton;
-    private JTextArea descriptionIsShownHereTextArea;
-    private JTextArea textArea1;
-    private JTextField textField3;
-    private JTextField textField4;
+    private JTextField IdNumberField;//tf stands for "text field"
+    private JComboBox ListOfCountries;
+    private JTextField WeightField;
+    private JRadioButton Priority1;
+    private JTextArea descriptionAbove;
+    private JTextArea planOfTheSecondHub;
+    private JTextField remitentCompany;
+    private JTextField receiverCompany;
     private JCheckBox customInspectionCheckBox;
     private JButton pileButton;
     private JButton unpileButton;
     private JButton showContainerDescriptionButton;
     private JButton numberOfContainersButton;
-    private JComboBox comboBox2;
+    private JComboBox ListOfCountries2;
     private JTextField putNumberHereTextField;
-    private JTextField columnNumberTextField;
-    private JTextArea descriptionIsShownHereTextArea1;
-    private JTextField companyLogoTextField;
+    private JTextField columnNumberField;
+    private JTextArea descriptionBelow;
     private JPanel MainPanel;
-    private JRadioButton a3RadioButton;
-    private JRadioButton a2RadioButton;
-
+    private JRadioButton Priority3;
+    private JRadioButton Priority2;
+    private JTextArea planOfTheHub;
+    private JTextArea planOfTheThirdHub;
     //2.CONSTRUCTORS
+
     public Port() {
 
-        ValenciaPort valencia=new ValenciaPort();
-        valencia.initializeHub();
+        ContainerHub hub=new ContainerHub();
+        ContainerHub hub2=new ContainerHub();
+        ContainerHub hub3=new ContainerHub();
         setContentPane(MainPanel);
-        setTitle("Port Management");//JFrame("Port Management");
-        setSize(1500,600);//pack();
+        setTitle("Port Management");
+        setSize(1500,1600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
-        //setLayout(new BorderLayout(10,5));
-        //setBackground(Color.MAGENTA);
-        setResizable(false);
-        //setLayout(null);//??
-        //getIconImage();//setIconImage(new ImageIcon().getImage());
-        tfIdNumber.addActionListener(new ActionListener() {
+        setResizable(true);
+        showContainerDescriptionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                valencia.idNumber= Integer.parseInt(tfIdNumber.getText());
-            }
-        });
-        tfWeight.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                valencia.weight=Integer.parseInt(tfWeight.getText());
-            }
-        });
-        descriptionIsShownHereTextArea.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                valencia.contentDescription=descriptionIsShownHereTextArea.getText();
-            }
-        });
-        textField3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                valencia.companyThatSendsTheContainer=textField3.getText();
-            }
-        });
-        textField4.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                valencia.companyThatReceivesTheContainer=textField4.getText();
-            }
-        });
-        customInspectionCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                    valencia.hasBeenInspected=true;
-            }
-        });
-        a1RadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                valencia.priorityLevel=1;
-            }
-        });
-        a2RadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                valencia.priorityLevel=2;
-            }
-        });
-        a3RadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                valencia.priorityLevel=3;
-            }
-        });
-        comboBox1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+                String id=IdNumberField.getText();
+                if(!hub.displayAllDataFromAnIdNumber(id).equals("No container was found with that identification number."))
+                    descriptionBelow.setText(hub.displayAllDataFromAnIdNumber(id));
+                else
+                    descriptionBelow.setText("No container was found with that identification number.");
             }
         });
         pileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                valencia.stackAContainerAccordingToPriority(valencia.priorityLevel);
+                String id=IdNumberField.getText();
+                String weight= WeightField.getText();
+                String countryOfOrigin = (String) ListOfCountries.getSelectedItem();
+                boolean hasBeenInspected= customInspectionCheckBox.isSelected();
+                int priority = 0;
+                if(Priority1.isSelected()){
+                    priority=1;}
+                else if(Priority2.isSelected()){
+                        priority=2;}
+                        if(Priority3.isSelected()){
+                            priority=3;
+                            }
+
+                String description= descriptionAbove.getText();
+                        String companyThatSendsTheContainer=remitentCompany.getText();
+                        String companyThatReceivesTheContainer=receiverCompany.getText();
+                //si lo estamos apilando es que no esta free
+                Container containerToPile=new Container(false,id,weight,countryOfOrigin,hasBeenInspected,
+                        priority,description,companyThatSendsTheContainer,companyThatReceivesTheContainer);
+                switch(containerToPile.getPriorityLevel()){
+                    case 1:
+                        hub.stackAContainerAccordingToPriority(containerToPile);
+                        if(hub.isFullPriority1)
+                            hub2.stackAContainerAccordingToPriority(containerToPile);
+                        if(hub2.isFullPriority1)
+                            hub3.stackAContainerAccordingToPriority(containerToPile);
+                        break;
+                    case 2:
+                        hub.stackAContainerAccordingToPriority(containerToPile);
+                        if(hub.isFullPriority2)
+                            hub2.stackAContainerAccordingToPriority(containerToPile);
+                        if(hub2.isFullPriority2)
+                            hub3.stackAContainerAccordingToPriority(containerToPile);
+                        break;
+                    case 3:
+                        hub.stackAContainerAccordingToPriority(containerToPile);
+                        if(hub.isFullPriority3)
+                            hub2.stackAContainerAccordingToPriority(containerToPile);
+                        if(hub2.isFullPriority3)
+                            hub3.stackAContainerAccordingToPriority(containerToPile);
+                        break;
+                }
+                planOfTheHub.setText(hub.toString());
+                planOfTheSecondHub.setText(hub2.toString());
+                planOfTheThirdHub.setText(hub3.toString());
             }
         });
         unpileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                valencia.removeContainerFromAColumn(columnNumberTextField.getColumns());
+                String column=columnNumberField.getText();
+                int decide=hub3.removeContainerFromAColumn(Integer.parseInt(column));
+                if(decide==-1){
+                    decide=hub2.removeContainerFromAColumn(Integer.parseInt(column));
+                    if(decide==-1)
+                        hub.removeContainerFromAColumn(Integer.parseInt(column));
+                }
+                planOfTheHub.setText(hub.toString());
+                planOfTheSecondHub.setText(hub2.toString());
+                planOfTheThirdHub.setText(hub3.toString());
             }
         });
 
-        showContainerDescriptionButton.addActionListener(new ActionListener() {
+        numberOfContainersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                descriptionIsShownHereTextArea1.addComponentListener(new ComponentAdapter() {
-                    @Override
-                    public void componentResized(ComponentEvent e) {
-                        valencia.displayAllDataFromAnIdNumber(valencia.idNumber);
-                    }
-                });
+                String country= (String) ListOfCountries2.getSelectedItem();
+                putNumberHereTextField.setText(String.valueOf(hub.numberOfContainersFromACertainCountry(country)));
             }
         });
-        textArea1.addComponentListener(new ComponentAdapter() {
+        Priority1.addActionListener(new ActionListener() {
             @Override
-            public String toString() {
-                return valencia.toString();
+            public void actionPerformed(ActionEvent e) {
+                if(Priority1.isSelected()){
+                    Priority3.setSelected(false);
+                    Priority2.setSelected(false);
+                }
+            }
+        });
+        Priority2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(Priority2.isSelected()){
+                    Priority1.setSelected(false);
+                    Priority3.setSelected(false);
+                }
+            }
+        });
+        Priority3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(Priority3.isSelected()){
+                    Priority1.setSelected(false);
+                    Priority2.setSelected(false);
+                }
             }
         });
     }
     public static void main(String[] args) {
         Port vamos= new Port();
-        //JFrame frame =new JFrame();
-        //JPanel panel=new JPanel();
-        //ValenciaPort port=new ValenciaPort();
-        //JPanel panel=new JPanel();
-        //panel.setVisible(true);
     }
 }
