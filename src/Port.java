@@ -1,16 +1,15 @@
 import PaqGroupINameAgustin.Container;
 import PaqGroupINameAgustin.ContainerHub;
-//Exceptions
-//Si pedis dos veces seguidas el number of containers no funciona
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 
-public class Port extends JFrame {
-
-    private JTextField IdNumberField;//tf stands for "text field"
+public class Port extends JFrame implements WindowListener {
+//1.ATTRIBUTES
+    private JTextField IdNumberField;
     private JComboBox ListOfCountries;
     private JTextField WeightField;
     private JRadioButton Priority1;
@@ -32,73 +31,128 @@ public class Port extends JFrame {
     private JRadioButton Priority2;
     private JTextArea planOfTheHub;
     private JTextArea planOfTheThirdHub;
+    private JLabel idNumberLabel;
     //2.CONSTRUCTORS
 
     public Port() {
-
         ContainerHub hub=new ContainerHub();
         ContainerHub hub2=new ContainerHub();
         ContainerHub hub3=new ContainerHub();
         setContentPane(MainPanel);
+        ImageIcon imageIcon = new ImageIcon("src/puerto-ciudad.png");
+        setIconImage(imageIcon.getImage());
         setTitle("Port Management");
         setSize(1500,1600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(true);
+        addWindowListener(this);
         showContainerDescriptionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String id=IdNumberField.getText();
                 if(!hub.displayAllDataFromAnIdNumber(id).equals("No container was found with that identification number."))
                     descriptionBelow.setText(hub.displayAllDataFromAnIdNumber(id));
-                else
+                else{
                     descriptionBelow.setText("No container was found with that identification number.");
+                    JOptionPane.showMessageDialog(null,"No container was found with that identification number.");
+                }
             }
         });
         pileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String id=IdNumberField.getText();
+                if(!id.matches("[0-9]+")){
+                    JOptionPane.showMessageDialog(null,"Invalid ID format (only numbers)");
+                    return;
+                }
+                for(int i=0;i<hub.getHub().length;i++){
+                    for(int k=0;k<hub.getHub().length;k++){
+                        if(hub.getHub()[i][k].getIdNumber().equals(id)){
+                            JOptionPane.showMessageDialog(null,"This id has been already assgined to a container. Please introduce another id number.");
+                            return;
+                        }
+                    }
+                }
+                for(int i=0;i<hub2.getHub().length;i++){
+                    for(int k=0;k<hub2.getHub().length;k++){
+                        if(hub2.getHub()[i][k].getIdNumber().equals(id)){
+                            JOptionPane.showMessageDialog(null,"This id has been already assgined to a container. Please introduce another id number.");
+                            return;
+                        }
+                    }
+                }
+                for(int i=0;i<hub3.getHub().length;i++){
+                    for(int k=0;k<hub3.getHub().length;k++){
+                        if(hub3.getHub()[i][k].getIdNumber().equals(id)){
+                            JOptionPane.showMessageDialog(null,"This id has been already assgined to a container. Please introduce another id number.");
+                            return;
+                        }
+                    }
+                }
                 String weight= WeightField.getText();
+                if(!weight.matches("[0-9]+")){
+                    JOptionPane.showMessageDialog(null,"Invalid WEIGHT format (only numbers)");
+                    return;
+                }
                 String countryOfOrigin = (String) ListOfCountries.getSelectedItem();
                 boolean hasBeenInspected= customInspectionCheckBox.isSelected();
                 int priority = 0;
                 if(Priority1.isSelected()){
-                    priority=1;}
+                    priority=1;
+                }
                 else if(Priority2.isSelected()){
-                        priority=2;}
-                        if(Priority3.isSelected()){
-                            priority=3;
-                            }
+                    priority=2;
+                }
+                if(Priority3.isSelected()){
+                    priority=3;
+                    }
+                if(priority==0){
+                    JOptionPane.showMessageDialog(null,"Please select a priority level");
+                    return;
+                }
 
                 String description= descriptionAbove.getText();
-                        String companyThatSendsTheContainer=remitentCompany.getText();
-                        String companyThatReceivesTheContainer=receiverCompany.getText();
+                if(description.matches("Description is shown here")){
+                    JOptionPane.showMessageDialog(null,"Please... write a proper description!");
+                    return;
+                }
+                String companyThatSendsTheContainer=remitentCompany.getText();
+                if(!companyThatSendsTheContainer.matches("[a-zA-Z]+")){
+                    JOptionPane.showMessageDialog(null,"Invalid format in REMITENT COMPANY (only letters)");
+                    return;
+                }
+                String companyThatReceivesTheContainer=receiverCompany.getText();
+                if(!companyThatReceivesTheContainer.matches("[a-zA-Z]+")){
+                    JOptionPane.showMessageDialog(null,"Invalid format in RECEIVER COMPANY (only letters)");
+                    return;
+                }
                 //si lo estamos apilando es que no esta free
                 Container containerToPile=new Container(false,id,weight,countryOfOrigin,hasBeenInspected,
                         priority,description,companyThatSendsTheContainer,companyThatReceivesTheContainer);
-                switch(containerToPile.getPriorityLevel()){
-                    case 1:
+                switch (containerToPile.getPriorityLevel()) {
+                    case 1 -> {
                         hub.stackAContainerAccordingToPriority(containerToPile);
-                        if(hub.isFullPriority1)
+                        if (hub.isFullPriority1())
                             hub2.stackAContainerAccordingToPriority(containerToPile);
-                        if(hub2.isFullPriority1)
+                        if (hub2.isFullPriority1())
                             hub3.stackAContainerAccordingToPriority(containerToPile);
-                        break;
-                    case 2:
+                    }
+                    case 2 -> {
                         hub.stackAContainerAccordingToPriority(containerToPile);
-                        if(hub.isFullPriority2)
+                        if (hub.isFullPriority2())
                             hub2.stackAContainerAccordingToPriority(containerToPile);
-                        if(hub2.isFullPriority2)
+                        if (hub2.isFullPriority2())
                             hub3.stackAContainerAccordingToPriority(containerToPile);
-                        break;
-                    case 3:
+                    }
+                    case 3 -> {
                         hub.stackAContainerAccordingToPriority(containerToPile);
-                        if(hub.isFullPriority3)
+                        if (hub.isFullPriority3())
                             hub2.stackAContainerAccordingToPriority(containerToPile);
-                        if(hub2.isFullPriority3)
+                        if (hub2.isFullPriority3())
                             hub3.stackAContainerAccordingToPriority(containerToPile);
-                        break;
+                    }
                 }
                 planOfTheHub.setText(hub.toString());
                 planOfTheSecondHub.setText(hub2.toString());
@@ -109,11 +163,19 @@ public class Port extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String column=columnNumberField.getText();
+                if(!column.matches("[0-9]+")){
+                    JOptionPane.showMessageDialog(null,"Invalid COLUMN NUMBER format (only numbers)");
+                    return;
+                }
                 int decide=hub3.removeContainerFromAColumn(Integer.parseInt(column));
                 if(decide==-1){
                     decide=hub2.removeContainerFromAColumn(Integer.parseInt(column));
-                    if(decide==-1)
-                        hub.removeContainerFromAColumn(Integer.parseInt(column));
+                    if(decide==-1){
+                        decide=hub.removeContainerFromAColumn(Integer.parseInt(column));
+                        if(decide==-1){
+                            JOptionPane.showMessageDialog(null,"We couldn't unpile any container from column number "+column);
+                        }
+                    }
                 }
                 planOfTheHub.setText(hub.toString());
                 planOfTheSecondHub.setText(hub2.toString());
@@ -158,5 +220,40 @@ public class Port extends JFrame {
     }
     public static void main(String[] args) {
         Port vamos= new Port();
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        JOptionPane.showConfirmDialog(null,"Are you sure you want to exit?");
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
     }
 }
