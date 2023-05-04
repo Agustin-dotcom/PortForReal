@@ -1,6 +1,7 @@
 import PaqGroupINameAgustin.Container;
 import PaqGroupINameAgustin.ContainerHub;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -32,6 +33,7 @@ public class Port extends JFrame implements WindowListener {
     private JTextArea planOfTheHub;
     private JTextArea planOfTheThirdHub;
     private JLabel idNumberLabel;
+    private JButton weightButton;
     //2.CONSTRUCTORS
 
     public Port() {
@@ -214,6 +216,59 @@ public class Port extends JFrame implements WindowListener {
                 if(Priority3.isSelected()){
                     Priority1.setSelected(false);
                     Priority2.setSelected(false);
+                }
+            }
+        });
+        /////////////////////////////////EXERCISE OF THE EXAM///////////////////////////////////////////
+        weightButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String weight = WeightField.getText();
+                if(Priority1.isSelected()){
+                    hub.markAsChecked(weight,hub.getHub());
+                    //display a new window
+                    JLabel label = new JLabel();
+                    JTextArea area = new JTextArea();
+                    area.setText(hub.markAsChecked(weight,hub.getHub()));
+                    label.add(area);
+                    JFrame frame = new JFrame();
+                    frame.setLayout(null);
+                    frame.setContentPane(label);
+                    frame.setSize(600,600);
+                    frame.setResizable(false);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+                }
+                if(Priority2.isSelected()){
+                    hub2.markAsChecked(weight,hub2.getHub());
+                    //display a new window
+                    JLabel label = new JLabel();
+                    JTextArea area = new JTextArea();
+                    area.setText(hub2.markAsChecked(weight,hub2.getHub()));
+                    label.add(area);
+                    JFrame frame = new JFrame();
+                    frame.setLayout(null);
+                    frame.setContentPane(label);
+                    frame.setSize(600,600);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+                    frame.setResizable(false);
+                }
+
+                if(Priority3.isSelected()){
+                    hub3.markAsChecked(weight,hub3.getHub());
+                    //display a new window
+                    JLabel label = new JLabel();
+                    JTextArea area = new JTextArea();
+                    area.setText(hub3.markAsChecked(weight,hub3.getHub()));
+                    label.add(area);
+                    JFrame frame = new JFrame();
+                    frame.setLayout(null);
+                    frame.setContentPane(label);
+                    frame.setSize(600,600);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+                    frame.setResizable(false);
                 }
             }
         });
